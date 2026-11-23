@@ -26,6 +26,14 @@ def main():
     path = os.path.join(out_dir, "entry.txt")
     with open(path, "w", encoding="utf-8", newline="") as handle:
         handle.write(LETTER)
+    # Verify the gate byte-for-byte: the entry is exactly one letter.
+    # A silent short write or stray newline would fail the sealed
+    # scorer, so refuse to exit cleanly unless the file reads back
+    # as exactly the letter and nothing else.
+    with open(path, "rb") as handle:
+        written = handle.read()
+    if written != LETTER.encode("utf-8"):
+        raise SystemExit("entry.txt is not exactly one letter: %r" % written)
 
 
 if __name__ == "__main__":
